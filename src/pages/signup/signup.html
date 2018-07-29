@@ -1,0 +1,44 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      Sign up
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <form [formGroup]="form">
+    <ion-list>
+      <ion-item>
+        <ion-label floating>Email</ion-label>
+        <ion-input type="text" [(ngModel)]="user.email" formControlName="emailField"></ion-input>
+      </ion-item>
+      <ion-item *ngIf="emailField.hasError('required') && emailField.touched">
+        <p>Email is required</p>
+      </ion-item>
+      <ion-item *ngIf="emailField.hasError('email') && !emailField.hasError('required') && emailField.touched">
+        <p>Invalid email</p>
+      </ion-item>
+
+      <ion-item>
+        <ion-label floating>Password</ion-label>
+        <ion-input type="password" [(ngModel)]="user.password" formControlName="passwordField"></ion-input>
+      </ion-item>
+      <ion-item *ngIf="passwordField.hasError('required') && passwordField.touched">
+        <p>Password is required</p>
+      </ion-item>
+
+      <ion-item>
+        <ion-label floating>Display name</ion-label>
+        <ion-input type="text" [(ngModel)]="user.displayName" formControlName="displayNameField"></ion-input>
+      </ion-item>
+      <ion-item *ngIf="displayNameField.hasError('required') && displayNameField.touched">
+        <p>Display name is required</p>
+      </ion-item>
+      <ion-item>
+        <button ion-button (click)='signup()' [disabled]="!form.valid">Sign up</button>
+      </ion-item>
+    </ion-list>
+  </form>
+
+</ion-content>
