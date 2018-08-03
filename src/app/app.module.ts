@@ -11,13 +11,15 @@ import { FIREBASE_CONFIG } from './app.firebase.config';
 import { LoginPage } from '../pages/login/login';
 import { SignupPage } from '../pages/signup/signup';
 import { ConversationsPage } from '../pages/conversations/conversations';
+import { CreateConversationPage } from '../pages/create-conversation/create-conversation';
 
 @NgModule({
   declarations: [
     MyApp,
     LoginPage,
     SignupPage,
-    ConversationsPage
+    ConversationsPage,
+    CreateConversationPage
   ],
   imports: [
     BrowserModule,
@@ -30,7 +32,8 @@ import { ConversationsPage } from '../pages/conversations/conversations';
     MyApp,
     LoginPage,
     SignupPage,
-    ConversationsPage
+    ConversationsPage,
+    CreateConversationPage
   ],
   providers: [
     StatusBar,
