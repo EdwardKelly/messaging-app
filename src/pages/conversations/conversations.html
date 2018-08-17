@@ -12,4 +12,7 @@
 
 <ion-content padding>
 
+  <ion-item *ngFor="let cid of cids(user.conversations)">
+    {{ user.conversations[cid].name }}
+  </ion-item>
 </ion-content>

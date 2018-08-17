@@ -3,6 +3,8 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Conversation } from '../../model/conversation';
 import { AngularFirestore } from '../../../node_modules/angularfire2/firestore';
 import { User } from '../../model/user';
+import firebase from '../../../node_modules/firebase';
+import { ConversationsPage } from '../conversations/conversations';
 
 @IonicPage()
 @Component({
@@ -23,32 +25,64 @@ export class CreateConversationPage {
   }
 
   addMember() {
-    if (this.emails.indexOf(this.newEmail) == -1 && this.newEmail != "") {
-        let createConversationPage = this;
+    let self = this;
+    if (self.emails.indexOf(self.newEmail) == -1 && self.newEmail != "") {
+
         
-        this.db.collection('users').ref.where("email", "==", this.newEmail).get()
+      self.db.collection('users').ref.where("email", "==", self.newEmail).get()
         .then(function(querySnapshot) {
           if (querySnapshot.empty) {
             console.log("User does not exist");            
-            createConversationPage.newEmail = "";
+            self.newEmail = "";
           } else {
             querySnapshot.forEach(function(doc) {
               console.log(doc.id+":="+doc.data().email);            
-              createConversationPage.emails.push(createConversationPage.newEmail);
-              createConversationPage.conversation.memberIds.push(doc.id);        
-              createConversationPage.newEmail = "";
+              self.conversation.memberIds.push(doc.id);  
+              self.emails.push(self.newEmail);     
+              self.newEmail = "";
             });
           }
-        }).catch(function(error) {
-          console.error(error);
+        }).catch(function(e) {
+          console.error(e);
         });
     }
   }
 
   createConversation() {
-    console.log(this.conversation);
-    // add convo to members
-    // create new convo with name and members
+    var self = this;
+    // create new conversation with name and members
+    self.db.collection('conversations').add({
+      name: self.conversation.name
+    }).then(function(docRef){
+      console.log(docRef);
+      self.conversation.cid = docRef.id;
+      // Add members
+      for (let uid of self.conversation.memberIds) {
+        self.db.collection('conversations').doc(docRef.id)
+        .collection('members').doc(uid).set({})
+        .then(function(docRef){
+          console.log(docRef);
+        }).catch(function(e) {
+          console.error(e);
+        });
+      }
+      // Add conversation to members
+      for (let uid of self.conversation.memberIds) {
+        self.db.collection('users').doc(uid)
+          .collection('conversations').doc(self.conversation.cid).set({})
+        .then(function(docRef){
+          console.log(docRef);
+          self.navCtrl.setRoot(ConversationsPage, {
+            user: self.user
+          });
+        }).catch(function(e) {
+          console.error(e);
+        });
+      }
+    }).catch(function(e) {
+      console.error(e);
+    });
+
   }
 
 }

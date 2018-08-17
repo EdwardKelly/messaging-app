@@ -42,7 +42,6 @@ export class LoginPage {
 
   login(){ 
     var loginPage: LoginPage = this;
-    // Create account
     this.afAuth.auth.signInWithEmailAndPassword(
       this.user.email, this.password
     ).then(function() {
