@@ -1,13 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { CreateConversationPage } from '../create-conversation/create-conversation';
+import { User } from '../../model/user';
 
-/**
- * Generated class for the ConversationsPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
 
 @IonicPage()
 @Component({
@@ -15,11 +10,15 @@ import { CreateConversationPage } from '../create-conversation/create-conversati
   templateUrl: 'conversations.html',
 })
 export class ConversationsPage {
-
+  user: User;
   constructor(public navCtrl: NavController, public navParams: NavParams) {
+    this.user = navParams.get('user');
+    console.log(this.user);
   }
 
   createConversation(){
-    this.navCtrl.push(CreateConversationPage)
+    this.navCtrl.push(CreateConversationPage, {
+      user: this.user
+    });
   }
 }

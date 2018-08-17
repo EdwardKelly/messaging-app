@@ -21,9 +21,13 @@
     <ion-item>
         <label floating>Add members</label>
     </ion-item>
+    <ion-item *ngFor="let email of emails">
+        {{ email }}
+    </ion-item>
     <ion-item>
         <ion-label floating>email</ion-label>
-        <ion-input type="text"></ion-input>
+        <ion-input type="text" [(ngModel)]="newEmail"></ion-input>
     </ion-item>
-    <button ion-button>+</button>
+    <button ion-button (click)='addMember()'>+</button>
+    <button ion-button (click)='createConversation()'>Create</button>
 </ion-content>

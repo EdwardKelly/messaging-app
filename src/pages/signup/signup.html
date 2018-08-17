@@ -22,7 +22,7 @@
 
       <ion-item>
         <ion-label floating>Password</ion-label>
-        <ion-input type="password" [(ngModel)]="user.password" formControlName="passwordField"></ion-input>
+        <ion-input type="password" [(ngModel)]="password" formControlName="passwordField"></ion-input>
       </ion-item>
       <ion-item *ngIf="passwordField.hasError('required') && passwordField.touched">
         <p>Password is required</p>

@@ -13,6 +13,7 @@ import { FormBuilder, FormGroup, AbstractControl, Validators } from '../../../no
 })
 export class LoginPage {
   user = {} as User;
+  password: string;
 
   form: FormGroup;
   emailField: AbstractControl;
@@ -43,7 +44,7 @@ export class LoginPage {
     var loginPage: LoginPage = this;
     // Create account
     this.afAuth.auth.signInWithEmailAndPassword(
-      this.user.email, this.user.password
+      this.user.email, this.password
     ).then(function() {
       var currentUser = loginPage.afAuth.auth.currentUser;
       loginPage.user.uid = currentUser.uid;
@@ -51,7 +52,9 @@ export class LoginPage {
 
       loginPage.loading.dismiss();
       loginPage.displaySuccessMessage();
-      loginPage.navCtrl.setRoot(ConversationsPage);
+      loginPage.navCtrl.setRoot(ConversationsPage, {
+        user: loginPage.user
+      });
     }).catch(function(e) {
       loginPage.loading.dismiss();
       loginPage.displayErrorMessage(e.message);
