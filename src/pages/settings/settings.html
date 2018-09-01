@@ -1,0 +1,37 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Settings</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+    <button ion-fab (click)='chooseImage()'><ion-icon name="checkmark"></ion-icon></button>
+
+  <form [formGroup]="form">
+    <ion-list>  
+      <ion-item>
+        <ion-label floating>Display name</ion-label>
+        <ion-input type="text" [(ngModel)]="user.displayName" formControlName="displayNameField"></ion-input>
+      </ion-item>
+      <ion-item *ngIf="displayNameField.hasError('required') && displayNameField.touched">
+        <p>Display name is required</p>
+      </ion-item>
+      <ion-item>
+          <ion-label floating>Profile image</ion-label>
+          <img src="{{ user.imageURL }}"/>
+          <button item-right ion-button (click)='chooseImage()'>
+              Upload
+          </button>
+      </ion-item>
+    </ion-list>
+    <ion-grid style="height: 100%">
+      <ion-row justify-content-center align-items-center style="height: 100%">
+          <button ion-button (click)='signup()' [disabled]="!form.valid">Save</button>
+      </ion-row>
+    </ion-grid>
+
+  </form>
+</ion-content>

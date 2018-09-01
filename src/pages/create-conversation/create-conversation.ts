@@ -1,10 +1,12 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { Conversation } from '../../model/conversation';
-import { AngularFirestore } from '../../../node_modules/angularfire2/firestore';
-import { User } from '../../model/user';
-import firebase from '../../../node_modules/firebase';
+import { Conversation } from '../../entity/conversation';
+import { User } from '../../entity/user';
 import { ConversationsPage } from '../conversations/conversations';
+import { Database } from '../../helper/database';
+import { Alert } from '../../helper/alert';
+import { Camera, CameraOptions } from '../../../node_modules/@ionic-native/camera';
+import { Storage } from '../../helper/storage';
 
 @IonicPage()
 @Component({
@@ -16,9 +18,12 @@ export class CreateConversationPage {
   conversation = {} as Conversation;
   newEmail: string;
   emails = [];
+  image = null;
+  imageSelected = "none";
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
-    public db: AngularFirestore) {
+    public db: Database, public alert: Alert, public camera: Camera,
+    public storage: Storage) {
     this.user = navParams.get('user');
     this.conversation.memberIds = [];
     this.conversation.memberIds.push(this.user.uid);
@@ -26,63 +31,58 @@ export class CreateConversationPage {
 
   addMember() {
     let self = this;
-    if (self.emails.indexOf(self.newEmail) == -1 && self.newEmail != "") {
+    if (self.emails.indexOf(self.newEmail) != -1 && self.newEmail == "")return; 
 
-        
-      self.db.collection('users').ref.where("email", "==", self.newEmail).get()
-        .then(function(querySnapshot) {
-          if (querySnapshot.empty) {
-            console.log("User does not exist");            
-            self.newEmail = "";
-          } else {
-            querySnapshot.forEach(function(doc) {
-              console.log(doc.id+":="+doc.data().email);            
-              self.conversation.memberIds.push(doc.id);  
-              self.emails.push(self.newEmail);     
-              self.newEmail = "";
-            });
-          }
-        }).catch(function(e) {
-          console.error(e);
+    self.db.getUserByEmail(self.newEmail)
+    .then(function(querySnapshot) {
+      if (querySnapshot.empty) {
+        self.alert.displayOkMessage("Email does not exist",self.newEmail+" is not registered")          
+        self.newEmail = "";
+      } else {
+        querySnapshot.forEach(function(doc) {          
+          self.conversation.memberIds.push(doc.id);  
+          self.emails.push(self.newEmail);     
+          self.newEmail = "";
         });
+      }
+    }).catch(function(e) {
+      self.alert.displayOkMessage("Could not add member",e.message);
+    });
+  }
+
+  async chooseImage(){
+    const options: CameraOptions = {
+      quality: 50,
+      targetHeight: 100,
+      targetWidth: 100,
+      destinationType: this.camera.DestinationType.DATA_URL,
+      encodingType: this.camera.EncodingType.PNG,
+      mediaType: this.camera.MediaType.PICTURE,
+      sourceType: this.camera.PictureSourceType.PHOTOLIBRARY
     }
+    this.image = await this.camera.getPicture(options);
+    this.imageSelected = "image selected";
   }
 
   createConversation() {
     var self = this;
-    // create new conversation with name and members
-    self.db.collection('conversations').add({
-      name: self.conversation.name
-    }).then(function(docRef){
-      console.log(docRef);
-      self.conversation.cid = docRef.id;
-      // Add members
-      for (let uid of self.conversation.memberIds) {
-        self.db.collection('conversations').doc(docRef.id)
-        .collection('members').doc(uid).set({})
-        .then(function(docRef){
-          console.log(docRef);
-        }).catch(function(e) {
-          console.error(e);
-        });
+    self.alert.displayLoading("");
+    self.db.createConversation(self.conversation)
+    .then(async function(conversation){
+      self.user.conversations[conversation.cid] = conversation;
+      if (self.image != null) {
+        // Upload conversation image
+        const filepath = 'conversation_images/'+conversation.cid+'.png';
+        await self.storage.uploadImage(self.image,filepath);
+        conversation.imageURL = await self.storage.downloadImage('conversation_images/'+conversation.cid+'.png');
       }
-      // Add conversation to members
-      for (let uid of self.conversation.memberIds) {
-        self.db.collection('users').doc(uid)
-          .collection('conversations').doc(self.conversation.cid).set({})
-        .then(function(docRef){
-          console.log(docRef);
-          self.navCtrl.setRoot(ConversationsPage, {
-            user: self.user
-          });
-        }).catch(function(e) {
-          console.error(e);
-        });
-      }
-    }).catch(function(e) {
-      console.error(e);
+      self.alert.dismissLoading();
+      self.navCtrl.setRoot(ConversationsPage, {
+        user: self.user
+      });
+    }).catch(function(e){
+      self.alert.displayOkMessage("Error creating conversation",e.message);
     });
-
   }
 
 }

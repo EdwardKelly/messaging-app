@@ -5,4 +5,5 @@ export interface Conversation {
     name: string;
     memberIds: string[];
     messages: Message[];
+    imageURL: string;
   }

@@ -1,10 +1,14 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, AlertController, LoadingController } from 'ionic-angular';
-import { User } from '../../model/user';
-import { AngularFireAuth } from 'angularfire2/auth';
+import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { User } from '../../entity/user';
 import { SignupPage } from '../signup/signup';
 import { ConversationsPage } from '../conversations/conversations';
 import { FormBuilder, FormGroup, AbstractControl, Validators } from '../../../node_modules/@angular/forms';
+import { Authentication } from '../../helper/authentication';
+import { Alert } from '../../helper/alert';
+import { Database } from '../../helper/database';
+import { Storage } from '../../helper/storage';
+import { SettingsProvider } from '../../providers/settings/settings';
 
 @IonicPage()
 @Component({
@@ -12,6 +16,8 @@ import { FormBuilder, FormGroup, AbstractControl, Validators } from '../../../no
   templateUrl: 'login.html',
 })
 export class LoginPage {
+  selectedTheme: String;
+
   user = {} as User;
   password: string;
 
@@ -22,9 +28,15 @@ export class LoginPage {
   loading: any;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, 
-    public afAuth: AngularFireAuth, public alertCtrl: AlertController, 
-    public loadingCtrl: LoadingController, public formBuilder: FormBuilder) {
+    public formBuilder: FormBuilder, public auth: Authentication,
+    public db: Database, public alert: Alert, public storage: Storage,
+    private settings: SettingsProvider) {
+      //this.settings.getActiveTheme().subscribe(val => this.selectedTheme = val);
       this.buildForm(formBuilder);
+  }
+
+  setTheme() {
+    this.settings.setActiveTheme('orange-theme');
   }
 
   buildForm(formBuilder) {
@@ -40,49 +52,28 @@ export class LoginPage {
     this.navCtrl.push(SignupPage)
   }
 
-  login(){ 
-    var loginPage: LoginPage = this;
-    this.afAuth.auth.signInWithEmailAndPassword(
-      this.user.email, this.password
-    ).then(function() {
-      var currentUser = loginPage.afAuth.auth.currentUser;
-      loginPage.user.uid = currentUser.uid;
-      loginPage.user.displayName = currentUser.displayName;
-
-      loginPage.loading.dismiss();
-      loginPage.displaySuccessMessage();
-      loginPage.navCtrl.setRoot(ConversationsPage, {
-        user: loginPage.user
+  login() {    
+    let self = this;
+    this.alert.displayLoading("Logging in...");
+    this.auth.login(this.user, this.password)
+    .then(async function(user) {
+      return await self.db.loadUser(user);
+    }).then(async function(user){
+      for (let cid in user.conversations){
+        let imageURL = await self.storage.downloadImage('conversation_images/'+cid+'.png');
+        user.conversations[cid].imageURL = imageURL;
+      }
+      return user;
+    })    
+    .then(function(user){
+      self.user = user;  
+      self.alert.dismissLoading();
+      self.navCtrl.setRoot(ConversationsPage, {
+        user: self.user
       });
-    }).catch(function(e) {
-      loginPage.loading.dismiss();
-      loginPage.displayErrorMessage(e.message);
+    }).catch(function(e){
+      self.alert.dismissLoading();
+      self.alert.displayOkMessage("Log in failed",e.message);
     })
-    this.displayLoading();
-  }
-  
-  displaySuccessMessage() {
-    let alert = this.alertCtrl.create({
-      title: 'Log in successful',
-      subTitle: 'Welcome ' + this.user.displayName,
-      buttons: ['OK']
-    });
-    alert.present();
-  }
-
-  displayErrorMessage(message) {
-    let alert = this.alertCtrl.create({
-      title: 'Log in failed',
-      subTitle: message,
-      buttons: ['OK']
-    });
-    alert.present();    
-  }
-
-  displayLoading() {
-    this.loading = this.loadingCtrl.create({
-      content: 'Logging in...'
-    });
-    this.loading.present();
   }
 }

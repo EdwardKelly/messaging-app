@@ -1,0 +1,32 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>{{conversation.name}}</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content #content padding class="open-conversation">
+  <ion-item *ngFor="let message of messages">
+      <div *ngIf="message.uid != user.uid">
+        <p ion-text color="primary" style="font-size: 18px">
+            {{ message.name }}</p>
+        <p style="font-size: 18px">{{message.content}}</p>
+      </div>
+      <div *ngIf="message.uid == user.uid">
+        <p ion-text color="primary" style="font-size: 18px; text-align: right">
+          Me</p>
+        <p style="font-size: 18px; text-align: right">{{message.content}}</p>
+      </div>
+  </ion-item>
+</ion-content>
+
+<ion-footer>
+  <ion-item>
+      <ion-input type="text" [(ngModel)]="messageContent" placeholder="Type here" style="font-size: 22px"></ion-input>
+      <button [disabled]="!messageContent" (click)="sendMessage()" clear item-right ion-button>
+          <ion-icon name="send" style="font-size: 25px"></ion-icon>
+      </button>
+  </ion-item>
+</ion-footer>

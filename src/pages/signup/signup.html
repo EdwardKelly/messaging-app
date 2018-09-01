@@ -35,10 +35,12 @@
       <ion-item *ngIf="displayNameField.hasError('required') && displayNameField.touched">
         <p>Display name is required</p>
       </ion-item>
-      <ion-item>
-        <button ion-button (click)='signup()' [disabled]="!form.valid">Sign up</button>
-      </ion-item>
     </ion-list>
+    <ion-grid style="height: 100%">
+      <ion-row justify-content-center align-items-center style="height: 100%">
+          <button ion-button (click)='signup()' [disabled]="!form.valid">Sign up</button>
+        </ion-row>
+    </ion-grid>
   </form>
 
 </ion-content>

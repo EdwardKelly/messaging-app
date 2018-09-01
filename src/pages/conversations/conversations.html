@@ -3,7 +3,9 @@
   <ion-navbar>
     <ion-title>Conversations</ion-title>
     <ion-buttons end>
-      <button ion-button (click)='createConversation()'>+</button>
+      <button ion-button icon-only (click)="presentPopover($event)">
+        <ion-icon name="more"></ion-icon>
+      </button>
     </ion-buttons>
   </ion-navbar>
 
@@ -12,7 +14,19 @@
 
 <ion-content padding>
 
-  <ion-item *ngFor="let cid of cids(user.conversations)">
-    {{ user.conversations[cid].name }}
+  <ion-item *ngFor="let cid of cids(user.conversations)" (click)="openConversation(cid)">
+      <div>
+        <div style="display: inline-block;vertical-align: middle">
+          <img *ngIf="user.conversations[cid].imageURL" style="height:50px; width:50px; object-fit:cover; border-radius:50%" src="{{ user.conversations[cid].imageURL }}"/>
+          <!--<ion-icon *ngIf="!user.conversations[cid].imageURL" style="height:50px; width:50px;" name="people"></ion-icon>-->
+        </div>
+        <div style="display: inline-block;vertical-align: middle; padding-left:10px;">
+          <p>{{ user.conversations[cid].name }}</p>
+        </div>
+        
+      </div>
   </ion-item>
+  <ion-fab right bottom>
+    <button ion-fab (click)='createConversation()'><ion-icon name="add"></ion-icon></button>
+  </ion-fab>
 </ion-content>
