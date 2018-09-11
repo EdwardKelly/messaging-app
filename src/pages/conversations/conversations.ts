@@ -5,7 +5,6 @@ import { User } from '../../entity/user';
 import { Database } from '../../helper/database';
 import { OpenConversationPage } from '../open-conversation/open-conversation';
 import { LoginPage } from '../login/login';
-import { SettingsPage } from '../settings/settings';
 
 
 @IonicPage()

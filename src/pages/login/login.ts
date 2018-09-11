@@ -8,7 +8,6 @@ import { Authentication } from '../../helper/authentication';
 import { Alert } from '../../helper/alert';
 import { Database } from '../../helper/database';
 import { Storage } from '../../helper/storage';
-import { SettingsProvider } from '../../providers/settings/settings';
 
 @IonicPage()
 @Component({
@@ -29,16 +28,11 @@ export class LoginPage {
 
   constructor(public navCtrl: NavController, public navParams: NavParams, 
     public formBuilder: FormBuilder, public auth: Authentication,
-    public db: Database, public alert: Alert, public storage: Storage,
-    private settings: SettingsProvider) {
-      //this.settings.getActiveTheme().subscribe(val => this.selectedTheme = val);
+    public db: Database, public alert: Alert, public storage: Storage) {
       this.buildForm(formBuilder);
   }
-
-  setTheme() {
-    this.settings.setActiveTheme('orange-theme');
-  }
-
+  
+  // Used for checking inputs are valid
   buildForm(formBuilder) {
     this.form = formBuilder.group({
       emailField: ['', [Validators.required, Validators.email]],

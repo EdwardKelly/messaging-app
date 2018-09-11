@@ -1,14 +1,11 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-
 import { User } from '../../entity/user';
 import { ConversationsPage } from '../conversations/conversations';
 import { FormBuilder, AbstractControl, FormGroup, Validators } from '@angular/forms';
 import { Database } from '../../helper/database';
 import { Authentication } from '../../helper/authentication';
 import { Alert } from '../../helper/alert';
-
-
 
 @IonicPage()
 @Component({
@@ -33,6 +30,7 @@ export class SignupPage {
       this.buildForm(formBuilder);
   }
 
+  // Used for checking inputs are valid
   buildForm(formBuilder) {
     this.form = formBuilder.group({
       emailField: ['', [Validators.required, Validators.email]],

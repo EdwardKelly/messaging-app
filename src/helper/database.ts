@@ -5,6 +5,10 @@ import { Conversation } from "../entity/conversation";
 import { Message } from "../entity/message";
 import { OpenConversationPage } from "../pages/open-conversation/open-conversation";
 
+/**
+ * Used to communicate with Firebase Firestore database
+ */
+
 @Injectable()
 export class Database {
 
@@ -99,6 +103,9 @@ export class Database {
     });
   }
 
+  /**
+   * Loads all the messages for the given conversation id
+   */
   loadMessages(cid: string, uid: string, receiveMessages: (messages: Message[],page: any)=>void, page: OpenConversationPage) {
     let self = this;    
     self.db.collection('conversations').doc(cid).collection('messages').ref
@@ -113,6 +120,9 @@ export class Database {
     })
   }
 
+  /**
+   * Sends a message to Firestore
+   */
   async sendMessage(cid: string, message: Message) {
     let self = this;
     self.db.collection('conversations').doc(cid).collection('messages').add(message);

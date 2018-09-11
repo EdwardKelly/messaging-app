@@ -20,7 +20,6 @@ import { Database } from '../helper/database';
 import { SettingsPage } from '../pages/settings/settings';
 import { Camera } from '../../node_modules/@ionic-native/camera';
 import { Storage } from '../helper/storage';
-import { SettingsProvider } from '../providers/settings/settings';
 
 @NgModule({
   declarations: [
@@ -60,8 +59,7 @@ import { SettingsProvider } from '../providers/settings/settings';
     Database,
     Camera,
     Storage,
-    {provide: ErrorHandler, useClass: IonicErrorHandler},
-    SettingsProvider
+    {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })
 export class AppModule {}

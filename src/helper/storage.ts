@@ -1,6 +1,9 @@
 import firebase from '../../node_modules/firebase';
 import { Injectable } from '../../node_modules/@angular/core';
 
+/**
+ * Helper class used to store and retrieve images from Firebase
+ */
 
 @Injectable()
 export class Storage {

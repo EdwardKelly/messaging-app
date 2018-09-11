@@ -2,7 +2,7 @@ import { AngularFireAuth } from "angularfire2/auth";
 import { Injectable } from "@angular/core";
 
 /**
- * Class to help with authentication
+ * Class to help with authentication with Firebase
  */
 
 @Injectable()

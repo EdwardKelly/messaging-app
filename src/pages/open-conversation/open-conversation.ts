@@ -31,7 +31,6 @@ export class OpenConversationPage {
 
   loadMessages() {    
     this.db.loadMessages(this.cid,this.user.uid,this.receiveMessages,this);
-    //this.scrollToBottom();
   }
 
   sendMessage() {
@@ -50,9 +49,10 @@ export class OpenConversationPage {
     page.scrollToBottom(page);
   } 
 
+  // Scrolls to bottom of page when a new message is sent or received
   scrollToBottom(page: OpenConversationPage){
     setTimeout(() => {
-      page.content.scrollToBottom(400);
+      if(page.content._scroll)page.content.scrollToBottom(400);
     });
   } 
 }
